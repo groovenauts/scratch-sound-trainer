@@ -560,9 +560,7 @@ function appReducer(appInfo, action) {
         return { ...appInfo, ...{ predicted: appInfo.micFlag ? action.data : null }};
     case "resetAll":
         if (appInfo.recognizer && appInfo.sampleNumbers.reduce((i,j) => i + j) > 0) {
-console.log(tf.memory());
             appInfo.recognizer.clearExamples();
-console.log(tf.memory());
         }
         return {
             ...appInfo,
