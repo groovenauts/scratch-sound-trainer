@@ -565,6 +565,7 @@ function appReducer(appInfo, action) {
         return {
             ...appInfo,
             ...{
+                micFlag: false,
                 phase: "init",
                 selectorNumber: 2,
                 sampleImages: Array.apply(null, Array(MAX_LABELS)).map(function(){return null;}),
