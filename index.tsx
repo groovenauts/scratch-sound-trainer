@@ -157,7 +157,8 @@ const Selector = (props) => {
     const appInfo = props.appInfo;
     const dispatch = props.dispatch;
 
-    const [recording, setRecording] = useState(false);
+    const recording = appInfo.recordingIndex === props.index;
+    const disabled = appInfo.recordingIndex !== null && !recording;
 
     const canvasRef = useRef(null);
 
@@ -165,7 +166,7 @@ const Selector = (props) => {
         if (recording) {
             appInfo.recognizer.collectExample(String(props.index), { durationSec: 2 }).then((spectrogram) => {
                 const image = spectrogramToImage(spectrogram);
-                setRecording(false);
+                dispatch(new Action("setRecordingIndex", null));
                 dispatch(new Action("setSampleImage", { index: props.index, image: image }));
                 dispatch(new Action("setSampleNumbers"));
             });
@@ -188,6 +189,10 @@ const Selector = (props) => {
         badge = props.sampleNumber;
     }
 
+    const startRecording = () => {
+        dispatch(new Action("setRecordingIndex", props.index));
+    };
+
     const canvasClassNames = [ "selector-canvas" ];
 
     return <div className={"selector-cell" + (props.isPredicted ? " predicted" : "")} >
@@ -201,7 +206,7 @@ const Selector = (props) => {
           <button className="capture-button mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored" >
             <i className="material-icons">mic</i>
           </button> :
-          <button className="capture-button mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab" onClick={() => setRecording(true)} >
+          <button className="capture-button mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab" disabled={disabled} onClick={startRecording} >
             <i className="material-icons">record_voice_over</i>
           </button>
         }
@@ -556,6 +561,8 @@ function appReducer(appInfo, action) {
         return { ...appInfo, ...{ selectorNumber: action.data }};
     case "setMicFlag":
         return { ...appInfo, ...{ micFlag: action.data, predicted: (action.data) ? appInfo.predicted : null }};
+    case "setRecordingIndex":
+        return { ...appInfo, ...{ recordingIndex: action.data }};
     case "setPredicted":
         return { ...appInfo, ...{ predicted: appInfo.micFlag ? action.data : null }};
     case "resetAll":
@@ -587,6 +594,7 @@ const Application = () => {
         selectorNumber: 2,
         sampleImages: Array.apply(null, Array(MAX_LABELS)).map(function(){return null;}),
         sampleNumbers: Array.apply(null, Array(MAX_LABELS)).map(function(){return 0;}),
+        recordingIndex: null,
         recognizer: null
     };
     const [ appInfo, dispatch ] = useReducer(appReducer, initialAppInfo);
