@@ -47,7 +47,8 @@ formatMessage.setup({
 const MAX_LABELS = 10;
 
 const Header = () => {
-    return <header>
+const onClick=() => console.log(tf.memory());
+    return <header onClick={onClick}>
         <div>{formatMessage({
                             id: "headerMessage",
                             default: "スクラッチに音をおぼえさせよう!",
@@ -569,9 +570,33 @@ function appReducer(appInfo, action) {
         if (appInfo.recognizer && appInfo.sampleNumbers.reduce((i,j) => i + j) > 0) {
             appInfo.recognizer.clearExamples();
         }
+        if (appInfo.recognizer) {
+            /** FIXME: dispose() these models cause error at training with new created recognizer.
+             *  I think dropout layers has some global tensor?
+            if (appInfo.recognizer.model){
+                appInfo.recognizer.model.dispose();
+            } else if (appInfo.recognizer.baseModel) {
+                appInfo.recognizer.baseModel.dispose();
+            }
+            */
+            /* <<<<< Workarounds: The layers except dropout can be disposed. >>>>> */
+            const layers;
+            if (appInfo.recognizer.model) {
+                layers = appInfo.recognizer.model.layers;
+            } else if (appInfo.recognizer.baseModel) {
+                layers = appInfo.recognizer.baseModel.layers;
+            }
+            layers.forEach((l) => {
+                if ( !l.name.startsWith("dropout_") ) {
+                    l.dispose();
+                }
+            });
+            /* >>>>> Workaround <<<<< */
+        }
         return {
             ...appInfo,
             ...{
+                recognizer: null,
                 micFlag: false,
                 phase: "init",
                 selectorNumber: 2,
@@ -620,7 +645,6 @@ const Application = () => {
                     }
                     const truncatedBaseLayers = layers.slice(0, layerIndex);
                     recognizer.secondLastBaseDenseLayer = layers[layerIndex];
-                    const truncatedBaseOutput = recognizer.secondLastBaseDenseLayer.output as tf.SymbolicTensor;
                     recognizer.model = tf.sequential({layers: truncatedBaseLayers.concat([tf.layers.dense({ units: recognizer.words.length, activation: "softmax"})])});
                 }
                 recognizer.createTransferModelFromBaseModel = patchedCreateTransferModelFromBaseModel;
@@ -630,7 +654,7 @@ const Application = () => {
 
         return () => {
         };
-    }, []);
+    }, [appInfo.recognizer]);
 
     return <div className="root">
             <Header />
