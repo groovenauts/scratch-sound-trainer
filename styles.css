@@ -23,6 +23,7 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
+  background: #fffde3;
 }
 button:focus {
   outline: 0;
