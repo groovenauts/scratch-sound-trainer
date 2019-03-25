@@ -269,24 +269,26 @@ const Trainer = (props) => {
 
     function train() {
         dispatch(new Action("setPhase", "training"));
-        appInfo.recognizer.train({
-            epochs: 50,
-            fineTuningEpochs: 50,
-            callback: {
-                onEpochEnd: (epoch, logs) => {
-                    setEpoch(epoch);
-                    setLoss(logs.loss);
-                }
-            },
-            fineTuningCallback: {
-                onEpochEnd: (epoch, logs) => {
-                    setEpoch(epoch + 50);
-                    setLoss(logs.loss);
-                }
-            },
-        }).then(() => {
-            dispatch(new Action("setPhase", "done"));
-        });
+        setTimeout(() => {
+            appInfo.recognizer.train({
+                epochs: 50,
+                fineTuningEpochs: 50,
+                callback: {
+                    onEpochEnd: (epoch, logs) => {
+                        setEpoch(epoch);
+                        setLoss(logs.loss);
+                    }
+                },
+                fineTuningCallback: {
+                    onEpochEnd: (epoch, logs) => {
+                        setEpoch(epoch + 50);
+                        setLoss(logs.loss);
+                    }
+                },
+            }).then(() => {
+                dispatch(new Action("setPhase", "done"));
+            })
+        }, 10);
     }
 
     function save() {
