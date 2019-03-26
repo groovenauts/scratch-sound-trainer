@@ -166,6 +166,14 @@ header {
   margin: 6px;
 }
 
+.epoch {
+  margin: 5px;
+}
+
+.loss {
+  margin: 5px;
+}
+
 #train-button {
   margin: 6px;
 }
