@@ -167,9 +167,17 @@ header {
 }
 
 .uploading-spinner {
-  margin: 6px;
+  margin: 10px;
 }
 
 #train-button {
-  margin: 6px;
+  margin: 10px;
+}
+
+#save-button {
+  margin: 10px;
+}
+
+.access-key {
+  margin: 10px;
 }

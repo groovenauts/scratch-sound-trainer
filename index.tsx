@@ -31,10 +31,14 @@ let translations = {
   "ja": {
     "headerMessage": "スクラッチに音をおぼえさせよう!",
     "train": "トレーニング",
+    "save": "アップロード",
+    "accessKey": "カギをゲットした",
   },
   "en": {
     "headerMessage": "Teach scratch with sounds!",
     "train": "Train",
+    "save": "Upload",
+    "accessKey": "You got a key",
   }
 };
 
@@ -377,7 +381,12 @@ const Trainer = (props) => {
                   </div>);
     }
     if (phase == "uploaded") {
-        elms.push(<div key="model-key" >カギをゲットした: <span>{modelKey}</span></div>);
+        elms.push(<div className="access-key" key="model-key" >
+                  {formatMessage({
+                                 id: "accessKey",
+                                 default: "カギをゲットした",
+                                 description: "Text message for getting access key."
+                  })} : <span>{modelKey}</span></div>);
     }
 
     return <div id="trainer">
