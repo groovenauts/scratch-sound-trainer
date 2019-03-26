@@ -252,14 +252,9 @@ const Trainer = (props) => {
     const dispatch = props.dispatch;
     const phase = appInfo.phase;
 
-    const [ loss, setLoss ] = useState(null);
-    const [ epoch, setEpoch ] = useState(0);
     const [ modelKey, setModelKey ] = useState(null);
 
-    async function epochCallback(e, logs) {
-        setLoss(logs.loss.toFixed(5));
-        setEpoch(e+1);
-    }
+    const progressRef = useRef(null);
 
     useEffect(() => {
         if (phase == "training" || phase == "uploading") {
@@ -275,14 +270,18 @@ const Trainer = (props) => {
                 fineTuningEpochs: 50,
                 callback: {
                     onEpochEnd: (epoch, logs) => {
-                        setEpoch(epoch);
-                        setLoss(logs.loss);
+                        console.log(`Epoch: ${epoch} Loss: ${logs.loss.toFixed(5)}`);
+                        if (progressRef.current) {
+                            progressRef.current.MaterialProgress.setProgress(epoch*2);
+                        }
                     }
                 },
                 fineTuningCallback: {
                     onEpochEnd: (epoch, logs) => {
-                        setEpoch(epoch + 50);
-                        setLoss(logs.loss);
+                        console.log(`Epoch: ${epoch} Loss: ${logs.loss.toFixed(5)}`);
+                        if (progressRef.current) {
+                            progressRef.current.MaterialProgress.setProgress(epoch*2);
+                        }
                     }
                 },
             }).then(() => {
@@ -360,14 +359,11 @@ const Trainer = (props) => {
                   })}
                   </button></div>);
     }
-    if (phase == "training" || phase == "uploading") {
-        elms.push(<div key="spinner" className="training-spinner"><div className="mdl-spinner mdl-js-spinner is-active"></div></div>);
-    }
     if (phase == "training") {
-        elms.push(<div className="epoch" key="epoch" >Epoch: {epoch}</div>);
+        elms.push(<div key="progress-bar" className="training-progress-bar"><div className="mdl-progress mdl-js-progress" ref={progressRef} ></div></div>);
     }
-    if (phase == "training" || phase == "done" || phase == "uploading" || phase == "uploaded") {
-        elms.push(<div className="loss" key="loss" >Loss: {loss}</div>);
+    if (phase == "uploading") {
+        elms.push(<div key="spinner" className="uploading-spinner"><div className="mdl-spinner mdl-js-spinner is-active"></div></div>);
     }
     if (phase == "done") {
         elms.push(<div key="save-button" >

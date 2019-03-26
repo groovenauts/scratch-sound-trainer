@@ -162,16 +162,12 @@ header {
   justify-content: center;
 }
 
-.training-spinner {
+.training-progress-bar {
+  margin-top: 20px;
+}
+
+.uploading-spinner {
   margin: 6px;
-}
-
-.epoch {
-  margin: 5px;
-}
-
-.loss {
-  margin: 5px;
 }
 
 #train-button {
