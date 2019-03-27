@@ -9,6 +9,7 @@
     "@tensorflow/tfjs": "^1.0.0",
     "@types/react": "^16.8.5",
     "@types/react-dom": "^16.8.2",
+    "fetch": "^1.1.0",
     "format-message": "^6.2.1",
     "fs": "^0.0.1-security",
     "locale": "^0.1.0",
