@@ -182,3 +182,15 @@ header {
 .access-key {
   margin: 10px;
 }
+
+.access-key-textbox {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 4px;
+}
+
+.access-key-copy-button {
+  margin: 0px;
+}

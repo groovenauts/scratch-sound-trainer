@@ -23,6 +23,7 @@ import React, { useState, useEffect, useRef, useReducer } from 'react';
 import ReactDOM from 'react-dom';
 
 import modelSaveHandler from "./modelSave";
+import AccessKey from "./access_key";
 
 const postURL = "https://scratch-sound-model-dot-ai-for-edu.appspot.com/models";
 
@@ -337,12 +338,11 @@ const Trainer = (props) => {
                   </div>);
     }
     if (phase == "uploaded") {
-        elms.push(<div className="access-key" key="model-key" >
-                  {formatMessage({
+        elms.push(<AccessKey key="model-key" label={formatMessage({
                                  id: "accessKey",
                                  default: "カギをゲットした",
                                  description: "Text message for getting access key."
-                  })} : <span>{modelKey}</span></div>);
+                  })} accessKey={modelKey} />);
     }
 
     return <div id="trainer">
