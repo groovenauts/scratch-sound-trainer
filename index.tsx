@@ -536,27 +536,11 @@ function appReducer(appInfo, action) {
             appInfo.recognizer.clearExamples();
         }
         if (appInfo.recognizer) {
-            /** FIXME: dispose() these models cause error at training with new created recognizer.
-             *  I think dropout layers has some global tensor?
             if (appInfo.recognizer.model){
                 appInfo.recognizer.model.dispose();
             } else if (appInfo.recognizer.baseModel) {
                 appInfo.recognizer.baseModel.dispose();
             }
-            */
-            /* <<<<< Workarounds: The layers except dropout can be disposed. >>>>> */
-            const layers;
-            if (appInfo.recognizer.model) {
-                layers = appInfo.recognizer.model.layers;
-            } else if (appInfo.recognizer.baseModel) {
-                layers = appInfo.recognizer.baseModel.layers;
-            }
-            layers.forEach((l) => {
-                if ( !l.name.startsWith("dropout_") ) {
-                    l.dispose();
-                }
-            });
-            /* >>>>> Workaround <<<<< */
         }
         return {
             ...appInfo,
