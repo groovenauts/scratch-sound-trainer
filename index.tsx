@@ -163,7 +163,7 @@ const Selector = (props) => {
     const dispatch = props.dispatch;
 
     const recording = appInfo.recordingIndex === props.index;
-    const disabled = appInfo.recordingIndex !== null && !recording;
+    const disabled = (appInfo.recordingIndex !== null && !recording) || appInfo.micFlag;
 
     const canvasRef = useRef(null);
 
