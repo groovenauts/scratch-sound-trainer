@@ -578,25 +578,6 @@ const Application = () => {
             const base = speechCommands.create("BROWSER_FFT");
             base.ensureModelLoaded().then(() => {
                 const recognizer = base.createTransfer("recognizer");
-                // Monkey Patching speech-recognizer's TransferRecognizer.createTransferModelFromBaseModel()
-                // to get rid of model save issue
-                const patchedCreateTransferModelFromBaseModel = () => {
-                    const layers = recognizer.baseModel.layers;
-                    let layerIndex = layers.length - 2;
-                    while (layerIndex >= 0) {
-                        if (layers[layerIndex].getClassName().toLowerCase() === 'dense') {
-                            break;
-                        }
-                        layerIndex--;
-                    }
-                    if (layerIndex < 0) {
-                        throw new Error('Cannot find a hidden dense layer in the base model.');
-                    }
-                    const truncatedBaseLayers = layers.slice(0, layerIndex);
-                    recognizer.secondLastBaseDenseLayer = layers[layerIndex];
-                    recognizer.model = tf.sequential({layers: truncatedBaseLayers.concat([tf.layers.dense({ units: recognizer.words.length, activation: "softmax"})])});
-                }
-                recognizer.createTransferModelFromBaseModel = patchedCreateTransferModelFromBaseModel;
                 dispatch(new Action("setRecognizer", recognizer));
             });
         }
