@@ -268,6 +268,14 @@ const Trainer = (props) => {
 
     function train() {
         dispatch(new Action("setPhase", "training"));
+        // reset recognizer.model to re-construct transfer model to adapt to current label number
+        if (appInfo.recognizer.model && appInfo.recognizer.model.layers[appInfo.recognizer.model.layers.length-1].outputs[0].shape[1] != appInfo.selectorNumber){
+            // MEMO: DO NOT dispose recognizer.model. It cause error because this dispose the baseModel too.
+            //       I gave up to clean all tensors at reconstruct transfer model.
+            //       Re-construct whole model by re-create speechCommands instance cause more severe leak (at least on speech-commands-0.3.9.
+            // appInfo.recognizer.model.dispose();
+            appInfo.recognizer.model = null;
+        }
         setTimeout(() => {
             appInfo.recognizer.train({
                 epochs: 50,
@@ -542,6 +550,7 @@ function appReducer(appInfo, action) {
                 appInfo.recognizer.baseModel.dispose();
             }
         }
+        tf.disposeVariables();
         return {
             ...appInfo,
             ...{
