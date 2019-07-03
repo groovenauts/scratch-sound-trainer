@@ -278,24 +278,24 @@ const Trainer = (props) => {
             appInfo.recognizer.model = null;
         }
         setTimeout(() => {
+            const epochs = 50;
+            const fineTuningEpochs = 50;
+            let lastEpoch = -1;
+            const progressCallback = (epoch, logs) => {
+                lastEpoch += 1;
+                console.log(`Epoch: ${epoch} Loss: ${logs.loss.toFixed(5)}`);
+                if (progressRef.current) {
+                    progressRef.current.MaterialProgress.setProgress((lastEpoch / (epochs + fineTuningEpochs)) * 100);
+                }
+            }
             appInfo.recognizer.train({
-                epochs: 50,
-                fineTuningEpochs: 50,
+                epochs: epochs,
+                fineTuningEpochs: fineTuningEpochs,
                 callback: {
-                    onEpochEnd: (epoch, logs) => {
-                        console.log(`Epoch: ${epoch} Loss: ${logs.loss.toFixed(5)}`);
-                        if (progressRef.current) {
-                            progressRef.current.MaterialProgress.setProgress(epoch*2);
-                        }
-                    }
+                    onEpochEnd: progressCallback
                 },
                 fineTuningCallback: {
-                    onEpochEnd: (epoch, logs) => {
-                        console.log(`Epoch: ${epoch} Loss: ${logs.loss.toFixed(5)}`);
-                        if (progressRef.current) {
-                            progressRef.current.MaterialProgress.setProgress(epoch*2);
-                        }
-                    }
+                    onEpochEnd: progressCallback
                 },
             }).then(() => {
                 dispatch(new Action("setPhase", "done"));
