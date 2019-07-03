@@ -297,6 +297,8 @@ const Trainer = (props) => {
                 fineTuningCallback: {
                     onEpochEnd: progressCallback
                 },
+                // to get rid of speech-commands bug in trainOnDataset(), always train on Tensor
+                fitDatasetDurationMillisThreshold: 1e20
             }).then(() => {
                 dispatch(new Action("setPhase", "done"));
             })
